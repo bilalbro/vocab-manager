@@ -1,0 +1,28 @@
+RewriteEngine On
+
+
+# If the requested filename is not a directory, and is also not a file, then
+# append a .php at the end of the URI and end the subsequent rewriting phase.
+
+# Ending the rewriting phase, by the [END] flag, is crucial, since if we don't do
+# that, rewrite processing will continue on after each rewrite (which is done on
+# line 12).
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule (.*) $1.php [END]
+
+
+# If the requested URI contains a .php at its end, add another .php at the end
+# to manually make the URI a non-existent URI.
+# Instead of this approach, we could even manually redirect to a custom 404 (NOT
+# FOUND) page. But keeping that functionality to itself in a separate
+# ErrorDocument directive is much better IMO.
+
+# The [NS] flag is important here because it prevents an internal subrequest,
+# coming from a directory access, to be processed.
+# For instance, if we visit example.com/, an internal subrequest is sent made to
+# example.com/index.php. If we don't add this [NS] flag, this request would be
+# rewritten to example.com/index.php.php which would clearly be problematic.
+
+RewriteRule (.*\.php)$ $1.php [NS]
